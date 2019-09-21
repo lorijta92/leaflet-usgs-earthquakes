@@ -1,16 +1,15 @@
 // Creating map object
 var myMap = L.map("map", {
-    center: [40.7, -73.95],
-    zoom: 11
-});
-
-// Legend colors: red to green
-var colors = ["#d73027", "#fc8d59", "#fee08b", "#d9ef8b", "#91cf60", "#1a9850"];
-
-// Function to determine marker size based on earthquake magnitude
-function markerSize(magnitude) {
-    return magnitude * 1500;
-}
+    center: [15.5994, -28.6731],
+    zoom: 3
+  });
+  
+L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+    attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+    maxZoom: 18,
+    id: "mapbox.light",
+    accessToken: API_KEY
+}).addTo(myMap);  
 
 // Store API query URL
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
@@ -20,17 +19,28 @@ d3.json(url, function(data) {
 
     for (var i = 0; i < data.features.length; i++) {
         
-        // Extract latitude and longitude of earthquakes
-        var lat = [data.features[i].geometry.coordinates[1]];
-        var lng = [data.features[i].geometry.coordinates[0]];
+        // Extract latitude, longitude, and magnitude of earthquakes
+        var coord = data.features[i].geometry.coordinates;
+        var mag = [data.features[i].properties.mag];
+
+        console.log(mag);
+
+        // Set marker color
+        var color = "";
+        if (mag > 5) {color = "#d73027";}
+        else if (mag > 4) {color = "#fc8d59";}
+        else if (mag > 3) {color = "#fee08b";}
+        else if (mag > 2) {color = "#d9ef8b";}
+        else if (mag > 1) {color = "#91cf60";}
+        else {color = "#1a9850";}
 
         // Circle markers
-        L.circle([lat, lng], {
-            color: "yellow",
-            fillColor: "yellow",
+        L.circle([coord[1], coord[0]], {
+            color: "black",
+            fillColor: color,
             fillOpacity: 0.5,
-            radius: markerSize(data.features[i].properties.mag)
-        }).bindPopup("<h1>" + data.features[i].properties.place + "</h1><hr><p> Magnitude: " + data.features[i].properties.mag).addTo(myMap);
+            radius: mag * 1500
+        }).bindPopup("<h1>" + data.features[i].properties.place + "</h1><hr><p> Magnitude: " + mag).addTo(myMap);
 
     }
 });
