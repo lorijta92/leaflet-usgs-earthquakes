@@ -1,6 +1,6 @@
 // Creating map object
 var myMap = L.map("map", {
-    center: [15.5994, -28.6731],
+    center: [33.98, -39.17],
     zoom: 3
   });
   
@@ -19,13 +19,13 @@ d3.json(url, function(data) {
 
     for (var i = 0; i < data.features.length; i++) {
         
-        // Extract latitude, longitude, and magnitude of earthquakes
+        // Extract coordinates, magnitude, location name, and date of earthquakes
         var coord = data.features[i].geometry.coordinates;
-        var mag = [data.features[i].properties.mag];
+        var mag = data.features[i].properties.mag;
+        var date = new Date(data.features[i].properties.time);
+        var loc_name = data.features[i].properties.place;
 
-        console.log(mag);
-
-        // Set marker color
+        // Set marker color based on magnitude
         var color = "";
         if (mag > 5) {color = "#d73027";}
         else if (mag > 4) {color = "#fc8d59";}
@@ -36,11 +36,11 @@ d3.json(url, function(data) {
 
         // Circle markers
         L.circle([coord[1], coord[0]], {
-            color: "black",
+            color: "#E3E3E3",
+            weight: 1,
             fillColor: color,
             fillOpacity: 0.5,
-            radius: mag * 1500
-        }).bindPopup("<h1>" + data.features[i].properties.place + "</h1><hr><p> Magnitude: " + mag).addTo(myMap);
-
+            radius: mag * 50000
+        }).bindPopup("<h1>" + loc_name + "</h1><hr><h3> Magnitude: " + mag + "</h3>" + "<p>" + date + "</p>").addTo(myMap);
     }
 });
