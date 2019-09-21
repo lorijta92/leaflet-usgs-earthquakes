@@ -15,7 +15,7 @@ L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
 // Store API query URL
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
-// Function to set marker color based on magnitude
+// Function to set marker color based on magnitude using a ternary operator
 function getColor(mag){
     return mag > 5 ? "#d73027":
         mag > 4 ? "#fc8d59" :
@@ -49,3 +49,18 @@ d3.json(url, function(data) {
 });
 
 // Create magnitude legend
+var legend = L.control({ position: "bottomleft" }); // Add layer control
+
+legend.onAdd = function(map) {
+    var div = L.DomUtil.create("div", "legend");
+    div.innerHTML += "<h4>Magnitude</h4>";
+    div.innerHTML += '<i style="background: #1a9850"></i><span>0-1</span><br>';
+    div.innerHTML += '<i style="background: #91cf60"></i><span>1-2</span><br>';
+    div.innerHTML += '<i style="background: #d9ef8b"></i><span>2-3</span><br>';
+    div.innerHTML += '<i style="background: #fee08b"></i><span>3-4</span><br>';
+    div.innerHTML += '<i style="background: #fc8d59"></i><span>4-5</span><br>';
+    div.innerHTML += '<i style="background: #d73027"></i><span>5+</span><br>';
+    return div;
+  };
+
+legend.addTo(map);
